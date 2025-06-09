@@ -1,4 +1,4 @@
-package Lex_Analyzer;
+package lexical_analyzer;
 
 import java.io.BufferedReader;
 import java.io.File;

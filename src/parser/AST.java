@@ -42,7 +42,13 @@ public class AST {
       // standardize using standardization rules
       switch (node.getType()){
         case "let":
-
+          //standardize let 
+          /*          let                   gamma
+          *          /  \                  /   \
+          *         =    P     =>      lambda   E
+          *        / \                 /   \
+          *       X   E                X    P
+          */
 
           Node equalNode = node.getLeft();
           Node exp = equalNode.getLeft().getRight();
@@ -52,7 +58,12 @@ public class AST {
           node.setType("gamma");
           break;
         case "where":
-
+          /*      where                     gamma
+           *      /   \                     /   \
+           *     P     =      =>         lambda  E
+           *          / \                 /   \
+           *         X   E               X     P
+           */
 
            Node lamNode = new Node("lambda");
            lamNode.setRight(node.getLeft().getRight().getLeft().getRight());
@@ -66,7 +77,14 @@ public class AST {
         
         
         case "within":
-
+          /*        within                      =
+           *        /   \                     /   \
+           *       =     =      =>           X2   gamma
+           *      / \   / \                        /  \
+           *     X1 E1 X2  E2                  lambda  E1
+           *                                    /   \
+           *                                   X1    E2
+           */
             
             Node x1 = node.getLeft().getLeft();
             Node e1 = x1.getRight();
@@ -86,7 +104,14 @@ public class AST {
         
         case "rec":
 
-         
+          /*      rec                           =
+           *       |                           /  \
+           *       =              =>          X   gamma
+           *      / \                              /  \
+           *     X   E                            Y   lambda
+           *                                          /   \
+           *                                          X    E
+           */
             equalNode = node.getLeft();
             Node xNode = equalNode.getLeft();
             lamNode = new Node("lambda");
@@ -104,7 +129,12 @@ public class AST {
             break;
         
         case "fcn_form":
-
+          /*      fcn_form                      =
+           *      /   |   \     =>             /  \    
+           *     P    V+   E                  P   +lambda
+           *                                        /   \
+           *                                        V   E
+           */
 
           Node vbNode = node.getLeft().getRight();
           Node lNode = creteLambdas(vbNode);
@@ -113,6 +143,12 @@ public class AST {
           break;
         
         case "@" :
+          /*        @                               gamma
+           *      / | \           =>                /   \ 
+           *    E1  N  E2                         gamma  E2
+           *                                      /   \
+           *                                     N    E1
+           */
 
             e1 = node.getLeft();
             Node n = e1.getRight();
@@ -127,7 +163,13 @@ public class AST {
             break;
 
           case "and":
-
+            /*
+             *          and                       =
+             *           |                       /  \
+             *          ++=           =>        ,    tau    
+             *          / \                     |      |
+             *         X   E                  ++X     ++E
+             */
 
              equalNode = node.getLeft();
              Node tauNode = new Node("tau");
@@ -148,7 +190,10 @@ public class AST {
         
           case "lambda":
              
-
+             /*       lambda                          ++lambda
+              *       /   \             =>             /    \
+                     V++   E                          V     .E
+              */
             
             vbNode = node.getLeft();
             if (vbNode.getRight().getRight()==null){

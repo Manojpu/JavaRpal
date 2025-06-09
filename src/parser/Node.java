@@ -2,7 +2,7 @@ package Parser;
 
 public class Node {
     /*
-     * Represents a node in AST. 
+     * Represents a node in AST. Uses first child next sibling representation
      * 
      * Node
      * / \
