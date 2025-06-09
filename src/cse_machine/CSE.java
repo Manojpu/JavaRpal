@@ -28,7 +28,7 @@ public class CSE {
     } 
 
     /*
-     * Method to insert a control structure into the Control given the delta number
+     * Function to insert a control structure into the Control given the delta number
      */
     public void insertToControl(int delta_num) {
         List<cs_node> delta_i = deltaLists.get(delta_num);
@@ -37,7 +37,7 @@ public class CSE {
     }
 
     /*
-     * Method to open the control structure into its constituent nodes
+     * Function to open the control structure into its constituent nodes
      */
     public void expandDelta() {
         cs_node delta_cs = this.getControlList().pop();
