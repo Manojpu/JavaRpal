@@ -327,7 +327,7 @@ public class CSE {
                             
                             break;
                         
-                        // CSE Rule 12
+                        // CSE Rule twelve
                         // Applying Y to lambda
                         case "Y":
                             topStackNode2 = this.getStackList().pop();
