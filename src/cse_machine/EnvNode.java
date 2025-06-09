@@ -1,15 +1,15 @@
-package cse_machine;
+package CSE_Machine;
 
-import control_structures.CSNode;
+import Control_Structures.cs_node;
 
 
 public class EnvNode {
     
     private int env_no;             // environment number 
-    private CSNode variable;        // the variable/s and its corresponding value/s
+    private cs_node variable;        // the variable/s and its corresponding value/s
     private EnvNode parentEnv;      // the parent environment node
 
-    public EnvNode(int env_no, CSNode variable, EnvNode parentEnv) {
+    public EnvNode(int env_no, cs_node variable, EnvNode parentEnv) {
         this.env_no = env_no;
         this.variable = variable;
         this.parentEnv = parentEnv;
@@ -23,11 +23,11 @@ public class EnvNode {
         this.env_no = env_no;
     }
 
-    public CSNode getVariable() {
+    public cs_node getVariable() {
         return variable;
     }
 
-    public void setEnv_variable(CSNode env_variable) {
+    public void setEnv_variable(cs_node env_variable) {
         this.variable = env_variable;
     }
 

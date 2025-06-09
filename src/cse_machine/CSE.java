@@ -1,4 +1,4 @@
-package cse_machine;
+package CSE_Machine;
 
 
 import java.util.ArrayList;
@@ -6,20 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import control_structures.CSNode;
+import Control_Structures.cs_node;
 
 
 public class CSE {
-    private List<List<CSNode>> deltaLists;                          // control structures
-    private Stack<CSNode> ControlList = new Stack<CSNode>();        // *C*ontrol
-    private Stack<CSNode> StackList = new Stack<CSNode>();          // *S*tack
+    private List<List<cs_node>> deltaLists;                          // control structures
+    private Stack<cs_node> ControlList = new Stack<cs_node>();        // *C*ontrol
+    private Stack<cs_node> StackList = new Stack<cs_node>();          // *S*tack
     private EnvironmentTree envtree = new EnvironmentTree();        // *E*nvironment Tree
     private int curr_env = 0;                                       // current environment number
     private int env_counter = 0;                                    // counter to indicate last created environment number
     private List<Integer> activeEnvNum = new ArrayList<Integer>();  // list of environments currently open
     
     // provide the delta lists when initiaiting a new CSE machine
-    public CSE(List<List<CSNode>> deltaLists) {
+    public CSE(List<List<cs_node>> deltaLists) {
         this.deltaLists = deltaLists;
     }
 
@@ -31,8 +31,8 @@ public class CSE {
      * Method to insert a control structure into the Control given the delta number
      */
     public void insertToControl(int delta_num) {
-        List<CSNode> delta_i = deltaLists.get(delta_num);
-        CSNode delta_cs = new CSNode("delta", delta_num, delta_i);
+        List<cs_node> delta_i = deltaLists.get(delta_num);
+        cs_node delta_cs = new cs_node("delta", delta_num, delta_i);
         this.getControlList().push(delta_cs);
     }
 
@@ -40,12 +40,12 @@ public class CSE {
      * Method to open the control structure into its constituent nodes
      */
     public void expandDelta() {
-        CSNode delta_cs = this.getControlList().pop();
+        cs_node delta_cs = this.getControlList().pop();
 
         // if its a control structure
         if (delta_cs.getType().equals("delta")) {
             // loop through control structure and push each node into the stack
-            List<CSNode> ctrl_struct = delta_cs.getTuple();
+            List<cs_node> ctrl_struct = delta_cs.getTuple();
             for (int i=0; i< ctrl_struct.size(); i++) {
                 this.getControlList().push(ctrl_struct.get(i)); 
             }
@@ -59,7 +59,7 @@ public class CSE {
      * Method to Start up the CSE machine
      */
     private void setupCSE() {
-        CSNode parent_env = new CSNode("env", curr_env);              // create env node 0
+        cs_node parent_env = new cs_node("env", curr_env);              // create env node 0
 
         this.ControlList.push(parent_env);                              // insert env node to Control
         this.StackList.push(parent_env);                                // insert env node to Stack
@@ -73,8 +73,8 @@ public class CSE {
     /*
      * Method to lookup the environment nodes to search for the value of a given variable name 
      */
-    public CSNode lookUpEnv(EnvironmentTree envtree, int env_no, String variable) {
-        CSNode envVar = envtree.getEnvNode(env_no).getVariable();
+    public cs_node lookUpEnv(EnvironmentTree envtree, int env_no, String variable) {
+        cs_node envVar = envtree.getEnvNode(env_no).getVariable();
         
         // list of variables stored in env node considered 
         List<String> varList = envVar.getLambdavar();
@@ -103,14 +103,14 @@ public class CSE {
         // while Control is not empty
         while(!this.getControlList().empty()) {
             
-            CSNode topCtrlNode = this.getControlList().pop();   // topmost node in control  
-            CSNode topStackNode1;                               // topmost node in stack
-            CSNode topStackNode2;                               // 2nd topmost node in stack
+            cs_node topCtrlNode = this.getControlList().pop();   // topmost node in control  
+            cs_node topStackNode1;                               // topmost node in stack
+            cs_node topStackNode2;                               // 2nd topmost node in stack
 
-            CSNode newGammaNode;
-            CSNode newlambdaNode;
+            cs_node newGammaNode;
+            cs_node newlambdaNode;
 
-            CSNode valueItem = topCtrlNode.duplicate();
+            cs_node valueItem = topCtrlNode.duplicate();
             
             /* First cheking the topmost Control Node to help decide on the CSE rule to implement */
             switch (topCtrlNode.getType()) {
@@ -153,7 +153,7 @@ public class CSE {
                         // get the name of the indentifier variable
                         String varName = topCtrlNode.getName();
                         // lookup the value of the identifier using the environment tree
-                        CSNode valueNode = lookUpEnv(envtree, curr_env, varName);
+                        cs_node valueNode = lookUpEnv(envtree, curr_env, varName);
                         // add the value of the identifier to the stack
                         this.getStackList().push(valueNode);
                     }
@@ -164,7 +164,7 @@ public class CSE {
                 // Stack Lambda into the Stack
                 case "lambdaClosure":
                     topCtrlNode.setEnvno(curr_env);                 // mark the current environment onto the lambda node
-                    CSNode lambdaNode = topCtrlNode.duplicate();
+                    cs_node lambdaNode = topCtrlNode.duplicate();
                     this.StackList.push(lambdaNode);                // push the lambda node with env into stack
                     break;
   
@@ -190,68 +190,68 @@ public class CSE {
                                     break;
 
                                 case "Conc":
-                                    CSNode concOneNode = RPALFunc.ConcOne(topStackNode2);
+                                    cs_node concOneNode = RPALFunc.ConcOne(topStackNode2);
                                     this.getStackList().push(concOneNode);
                                     break;
 
                                 case "ConcOne":
-                                    CSNode node1 = topStackNode1.getTuple().get(0);
-                                    CSNode concatNode = RPALFunc.Conc(node1, topStackNode2);
+                                    cs_node node1 = topStackNode1.getTuple().get(0);
+                                    cs_node concatNode = RPALFunc.Conc(node1, topStackNode2);
                                     this.getStackList().push(concatNode);
                                     break;
                                 
                                 case "Stem":
-                                    CSNode stemNode = RPALFunc.Stem(topStackNode2);
+                                    cs_node stemNode = RPALFunc.Stem(topStackNode2);
                                     this.getStackList().push(stemNode);
                                     break;
 
                                 case "Stern":
-                                    CSNode sternNode = RPALFunc.Stern(topStackNode2);
+                                    cs_node sternNode = RPALFunc.Stern(topStackNode2);
                                     this.getStackList().push(sternNode);
                                     break;
 
                                 case "Order":
-                                    CSNode numNode = RPALFunc.Order(topStackNode2);
+                                    cs_node numNode = RPALFunc.Order(topStackNode2);
                                     this.getStackList().push(numNode);
                                     break;
 
                                 case "Null":
-                                    CSNode nullNode = RPALFunc.Null(topStackNode2);
+                                    cs_node nullNode = RPALFunc.Null(topStackNode2);
                                     this.getStackList().push(nullNode);
                                     break;
 
                                 case "Isinteger":
-                                    CSNode isIntNode = RPALFunc.Isinteger(topStackNode2);
+                                    cs_node isIntNode = RPALFunc.Isinteger(topStackNode2);
                                     this.getStackList().push(isIntNode);
                                     break;
                                 
                                 case "Istruthvalue":
-                                    CSNode isTruthNode = RPALFunc.Istruthvalue(topStackNode2);
+                                    cs_node isTruthNode = RPALFunc.Istruthvalue(topStackNode2);
                                     this.getStackList().push(isTruthNode);
                                     break;
                                 
                                 case "Isstring":
-                                    CSNode isStringNode = RPALFunc.Isstring(topStackNode2);
+                                    cs_node isStringNode = RPALFunc.Isstring(topStackNode2);
                                     this.getStackList().push(isStringNode);
                                     break;
                                 
                                 case "Istuple":
-                                    CSNode isTupleNode = RPALFunc.Istuple(topStackNode2);
+                                    cs_node isTupleNode = RPALFunc.Istuple(topStackNode2);
                                     this.getStackList().push(isTupleNode);
                                     break;
                                 
                                 case "Isfunction":
-                                    CSNode isFunctionNode = RPALFunc.Isfunction(topStackNode2);
+                                    cs_node isFunctionNode = RPALFunc.Isfunction(topStackNode2);
                                     this.getStackList().push(isFunctionNode);
                                     break;
                                 
                                 case "Isdummy":
-                                    CSNode isDummyNode = RPALFunc.Isdummy(topStackNode2);
+                                    cs_node isDummyNode = RPALFunc.Isdummy(topStackNode2);
                                     this.getStackList().push(isDummyNode);
                                     break;
 
                                 case "ItoS":
-                                    CSNode strNode = RPALFunc.intToStr(topStackNode2);
+                                    cs_node strNode = RPALFunc.intToStr(topStackNode2);
                                     this.getStackList().push(strNode);
                                     break;
                                 
@@ -271,16 +271,16 @@ public class CSE {
                             this.curr_env = env_counter;
 
                             // creating new environment variable to insert to control-stack
-                            CSNode envCSNode = new CSNode("env", env_counter);
+                            cs_node envCSNode = new cs_node("env", env_counter);
 
                             // clear space in tuple parameter to insert the values of the parameters tracked by lambda
-                            topStackNode1.setTuple(new ArrayList<CSNode>());
+                            topStackNode1.setTuple(new ArrayList<cs_node>());
                             
                             // if the lambda node tracks multiple parameters (formerly a comma node)
                             if (topStackNode1.getLambdavar().size() > 1) {
 
                                 // then insert each value into the tuple parameter of lambda node
-                                List<CSNode> tuple1 = topStackNode2.getTuple();
+                                List<cs_node> tuple1 = topStackNode2.getTuple();
                                 for (int i = 0; i < tuple1.size(); i++) {
                                     topStackNode1.getTuple().add(tuple1.get(i));
                                 }
@@ -289,7 +289,7 @@ public class CSE {
                                 // else just save the value in the tuple parameter of the lambda node
                                 topStackNode1.getTuple().add(topStackNode2);
                             }
-                            CSNode valueNode = topStackNode1.duplicate();
+                            cs_node valueNode = topStackNode1.duplicate();
 
                             // create a new Environment node with value saved 
                             this.envtree.addEnv(curr_env, valueNode, this.envtree.getEnvNode(topStackNode1.getEnvno()));
@@ -317,10 +317,10 @@ public class CSE {
                             int index_i = Integer.parseInt(topStackNode2.getName());
 
                             // extract tuple
-                            List<CSNode> tuple = topStackNode1.getTuple();
+                            List<cs_node> tuple = topStackNode1.getTuple();
                             
                             // selecting the required tuple element
-                            CSNode tup_elem = tuple.get(index_i-1);
+                            cs_node tup_elem = tuple.get(index_i-1);
 
                             // inserting the selected tuple element
                             this.getStackList().push(tup_elem);
@@ -331,7 +331,7 @@ public class CSE {
                         // Applying Y to lambda
                         case "Y":
                             topStackNode2 = this.getStackList().pop();
-                            CSNode etaNode = topStackNode2.duplicate();
+                            cs_node etaNode = topStackNode2.duplicate();
                             etaNode.setType("eta");
                             this.getStackList().push(etaNode);
                             break;
@@ -340,7 +340,7 @@ public class CSE {
                         // Applying f.p.
                         case "eta":
                             // updating the control
-                            newGammaNode = new CSNode("gamma", "gamma");
+                            newGammaNode = new cs_node("gamma", "gamma");
                             // pushing 2 gamma nodes to the control
                             this.getControlList().push(newGammaNode);      
                             this.getControlList().push(newGammaNode);      
@@ -349,7 +349,7 @@ public class CSE {
                             List<String> varList = topStackNode1.getLambdavar();
                             
                             // creating a new lambda node with env stored
-                            newlambdaNode = new CSNode("lambdaClosure", varList, topStackNode1.getLambdano());
+                            newlambdaNode = new cs_node("lambdaClosure", varList, topStackNode1.getLambdano());
                             newlambdaNode.setEnvno(topStackNode1.getEnvno());
                             this.getStackList().push(topStackNode1);        // pushing the eta node back into the stack
                             this.getStackList().push(newlambdaNode);        // pushing the lambda into the stack
@@ -397,63 +397,63 @@ public class CSE {
                     topStackNode2 = this.getStackList().pop();
                     switch (topCtrlNode.getName()) {
                         case "+":
-                            CSNode sumNode = RPALBinaryOps.add(topStackNode1, topStackNode2);
+                            cs_node sumNode = RPALBinaryOps.add(topStackNode1, topStackNode2);
                             this.getStackList().push(sumNode);    
                             break;
                         case "-":
-                            CSNode diffNode = RPALBinaryOps.subtract(topStackNode1, topStackNode2);
+                            cs_node diffNode = RPALBinaryOps.subtract(topStackNode1, topStackNode2);
                             this.getStackList().push(diffNode);    
                             break;
                         case "*":
-                            CSNode productNode = RPALBinaryOps.multiply(topStackNode1, topStackNode2);
+                            cs_node productNode = RPALBinaryOps.multiply(topStackNode1, topStackNode2);
                             this.getStackList().push(productNode);
                             break;
                         case "/":
-                            CSNode quotientNode = RPALBinaryOps.divide(topStackNode1, topStackNode2);
+                            cs_node quotientNode = RPALBinaryOps.divide(topStackNode1, topStackNode2);
                             this.getStackList().push(quotientNode);
                             break;
                         case "**":
-                            CSNode powerNode = RPALBinaryOps.power(topStackNode1, topStackNode2);
+                            cs_node powerNode = RPALBinaryOps.power(topStackNode1, topStackNode2);
                             this.getStackList().push(powerNode);
                             break;
                         case "eq":
-                            CSNode isEqual = RPALBinaryOps.isEqual(topStackNode1, topStackNode2);
+                            cs_node isEqual = RPALBinaryOps.isEqual(topStackNode1, topStackNode2);
                             this.getStackList().push(isEqual);
                             break;
                         case "ne":
-                            CSNode isNotEqual = RPALBinaryOps.isNotEqual(topStackNode1, topStackNode2);
+                            cs_node isNotEqual = RPALBinaryOps.isNotEqual(topStackNode1, topStackNode2);
                             this.getStackList().push(isNotEqual);
                             break;
                         case "ls":
                         case "<":
-                            CSNode isLess = RPALBinaryOps.isLessThan(topStackNode1, topStackNode2);
+                            cs_node isLess = RPALBinaryOps.isLessThan(topStackNode1, topStackNode2);
                             this.getStackList().push(isLess);
                             break;
                         case "gr":
                         case ">":
-                            CSNode isGreater = RPALBinaryOps.isGreaterThan(topStackNode1, topStackNode2);
+                            cs_node isGreater = RPALBinaryOps.isGreaterThan(topStackNode1, topStackNode2);
                             this.getStackList().push(isGreater);
                             break;
                         case "le":
                         case "<=":
-                            CSNode isLessEqual = RPALBinaryOps.isLessEqualThan(topStackNode1, topStackNode2);
+                            cs_node isLessEqual = RPALBinaryOps.isLessEqualThan(topStackNode1, topStackNode2);
                             this.getStackList().push(isLessEqual);
                             break;
                         case "ge":
                         case ">=":
-                            CSNode isGreaterEqual = RPALBinaryOps.isGreaterEqualThan(topStackNode1, topStackNode2);
+                            cs_node isGreaterEqual = RPALBinaryOps.isGreaterEqualThan(topStackNode1, topStackNode2);
                             this.getStackList().push(isGreaterEqual);
                             break;
                         case "or":
-                            CSNode logicOR = RPALBinaryOps.logicOR(topStackNode1, topStackNode2);
+                            cs_node logicOR = RPALBinaryOps.logicOR(topStackNode1, topStackNode2);
                             this.getStackList().push(logicOR);
                             break;
                         case "&":
-                            CSNode logicAND = RPALBinaryOps.logicAND(topStackNode1, topStackNode2);
+                            cs_node logicAND = RPALBinaryOps.logicAND(topStackNode1, topStackNode2);
                             this.getStackList().push(logicAND);
                             break;
                         case "aug":
-                            CSNode augNode = RPALBinaryOps.augment(topStackNode1, topStackNode2);
+                            cs_node augNode = RPALBinaryOps.augment(topStackNode1, topStackNode2);
                             this.getStackList().push(augNode);
                             break;
                         default:
@@ -495,13 +495,13 @@ public class CSE {
                     int n = topCtrlNode.getTauno();
                     
                     // creating the tuple Object to be added into the stack
-                    CSNode tuple = new CSNode("tuple", "tuple");
+                    cs_node tuple = new cs_node("tuple", "tuple");
                     tuple.setIsTuple(true);
 
                     // extracting each of the tuple items from the loop 
                         // and adding to the tuple object
                     for (int i=0; i<n; i++) {
-                        CSNode tup_elem = this.getStackList().pop();
+                        cs_node tup_elem = this.getStackList().pop();
                         tuple.getTuple().add(tup_elem.duplicate());
                     }
 
@@ -521,19 +521,19 @@ public class CSE {
      * End of runCSE method
      */
 
-    public Stack<CSNode> getControlList() {
+    public Stack<cs_node> getControlList() {
         return ControlList;
     }
 
-    public void setControlList(Stack<CSNode> controlList) {
+    public void setControlList(Stack<cs_node> controlList) {
         ControlList = controlList;
     }
 
-    public Stack<CSNode> getStackList() {
+    public Stack<cs_node> getStackList() {
         return StackList;
     }
 
-    public void setStackList(Stack<CSNode> stackList) {
+    public void setStackList(Stack<cs_node> stackList) {
         StackList = stackList;
     }
 

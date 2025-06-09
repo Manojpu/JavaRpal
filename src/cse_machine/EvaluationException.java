@@ -1,4 +1,4 @@
-package cse_machine;
+package CSE_Machine;
 
 
 public class EvaluationException extends RuntimeException {

@@ -1,13 +1,13 @@
 
 
-package control_structures;
+package Control_Structures;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSNode {
+public class cs_node {
     private boolean isTuple;            // indicates if node is tuple
-    private List<CSNode> tuple;         // stores the elements of the tuple
+    private List<cs_node> tuple;         // stores the elements of the tuple
     private String type;                // stores the type of node
     private String name;                // contains the value of the node for Integer, String, Truthvalue
     private List<String> lambdavar;     // stores the list of nodes enclosed by the lambda node
@@ -21,9 +21,9 @@ public class CSNode {
     private int tauno;                  // indicates the number of elements in tau node
                                                 // used in tau nodes
 
-    public CSNode() {
+    public cs_node() {
         isTuple = false;
-        tuple = new ArrayList<CSNode>();
+        tuple = new ArrayList<cs_node>();
         lambdavar = new ArrayList<String>();
         type = name = "";
         lambdano = envno = thenno = elseno = tauno = -1;
@@ -32,11 +32,11 @@ public class CSNode {
     // used for tau node and identifier type variables
         // only type and name are made
         // but for Tau node need to declare tauno (# of variables in tuple)
-    public CSNode(String t, String n) {
+    public cs_node(String t, String n) {
         type = t;
         name = n;
         isTuple = false;
-        tuple = new ArrayList<CSNode>();
+        tuple = new ArrayList<cs_node>();
         lambdavar = new ArrayList<String>();
         lambdano = envno = thenno = elseno = tauno = -1;
     }
@@ -45,23 +45,23 @@ public class CSNode {
         // type will always be declared as "lambdaClosure"
         // lambdavar indicates the name of the variable to subsitute for
         // lambdano gives the number of the delta control structure
-    public CSNode(String t, List<String> varLambda, int lambda_no) {
+    public cs_node(String t, List<String> varLambda, int lambda_no) {
         type = t;
         lambdavar = varLambda;
         lambdano = lambda_no;
         isTuple = false;
-        tuple = new ArrayList<CSNode>();
+        tuple = new ArrayList<cs_node>();
         name = "";
         envno = thenno = elseno = tauno = -1;
     }
 
     // used for environment variables 
         // need type, env number
-    public CSNode(String t, int env_no) {
+    public cs_node(String t, int env_no) {
         type = t;
         envno = env_no;
         isTuple = false;
-        tuple = new ArrayList<CSNode>();
+        tuple = new ArrayList<cs_node>();
         name = "";
         lambdavar = new ArrayList<String>();
         lambdano = thenno = elseno = tauno = -1;
@@ -70,12 +70,12 @@ public class CSNode {
     // used for conditional statements 
         // type is always given as "beta"
         // need the then_no and else_no as the parameters then
-    public CSNode(String t, int then_no, int else_no) {
+    public cs_node(String t, int then_no, int else_no) {
         type = t;
         thenno = then_no;
         elseno = else_no;
         isTuple = false;
-        tuple = new ArrayList<CSNode>();
+        tuple = new ArrayList<cs_node>();
         name = "";
         lambdavar =new ArrayList<String>();
         lambdano = envno = tauno = -1;
@@ -83,7 +83,7 @@ public class CSNode {
 
     // used to create an object for inserting a delta structure into the control stack 
         // delta no is stored in the envno parameter
-    public CSNode(String t, int delta_no, List<CSNode> delta_struct) {
+    public cs_node(String t, int delta_no, List<cs_node> delta_struct) {
         type = t;
         envno = delta_no;
         tuple = delta_struct;
@@ -97,7 +97,7 @@ public class CSNode {
         return isTuple;
     }
 
-    public List<CSNode> getTuple() {
+    public List<cs_node> getTuple() {
         return tuple;
     }
 
@@ -137,7 +137,7 @@ public class CSNode {
         this.isTuple = isTuple;
     }
 
-    public void setTuple(List<CSNode> tuple) {
+    public void setTuple(List<cs_node> tuple) {
         this.tuple = tuple;
     }
 
@@ -176,8 +176,8 @@ public class CSNode {
     /*
      * Function to duplicate contents of Control Structure Nodes
      */
-    public CSNode duplicate() {
-        CSNode dupNode = new CSNode();
+    public cs_node duplicate() {
+        cs_node dupNode = new cs_node();
         dupNode.setIsTuple(this.getIsTuple());
         dupNode.setTuple(this.getTuple());
         dupNode.setType(this.getType());
