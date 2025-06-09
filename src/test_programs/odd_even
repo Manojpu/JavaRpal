@@ -1,0 +1,5 @@
+let OddEven 
+    n = (n - (n/2) * 2) eq 0 -> 'Even' 
+    |'Odd' 
+in 
+    Print( OddEven 12 )

@@ -1,4 +1,4 @@
-package lexical_analyzer;
+package Lex_Analyzer;
 
 public class Token {
     // Token is simply a pair of type and value(eg: <IDENTIFIER: function>)

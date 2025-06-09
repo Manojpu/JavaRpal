@@ -1,0 +1,14 @@
+//make sure a != b
+let fibSeries a b =
+a ge b -> Print 'Invalid'
+| fibSer a b
+//Compute the ath to bth fibonacci number and print them
+where rec fibSer a b =
+    a > b -> nil
+    | (fibSer (a+1) b, Print ' ', Print (fib a))
+    //Compute the nth fibonacci number
+    where rec fib n =
+        n eq 1 -> 1
+        |n eq 2 -> 1
+        |fib (n-1) + fib (n-2)
+in fibSeries 1 10
